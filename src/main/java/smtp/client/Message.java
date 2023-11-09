@@ -1,8 +1,8 @@
-package org.example;
+package smtp.client;
 
 public class Message {
     private final String subject;
-    private String body;
+    private final String body;
 
     private final Group group;
 

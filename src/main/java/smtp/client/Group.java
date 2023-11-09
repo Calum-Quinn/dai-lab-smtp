@@ -1,4 +1,4 @@
-package org.example;
+package smtp.client;
 
 import java.util.ArrayList;
 
