@@ -1,9 +1,13 @@
 package smtp.client;
 
+import org.json.simple.parser.ParseException;
+
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+
+import static smtp.client.DataReader.getMessagesFromFile;
 
 public class Client {
 
@@ -33,7 +37,7 @@ public class Client {
 
 
             // Create the groups using the DataReader
-            ArrayList<String> addresses = getAddressesFromFile(emailPath);
+            ArrayList<String> addresses = DataReader.getAddressesFromFile(emailPath);
             ArrayList<Group> groups = new ArrayList<Group>();
             int peoplePerGroup = addresses.size() / numberOfGroups;
 
@@ -57,6 +61,8 @@ public class Client {
 
         } catch (IOException e) {
             System.out.println("Error: " + e);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
     }
 }
