@@ -4,8 +4,6 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Scanner;
 
 public class Client {
 
@@ -21,44 +19,44 @@ public class Client {
     public static void main(String[] args) {
         // Create the client
         Client client = new Client();
-        client.run();
+        String emailPath = args[0];
+        String messagePath = args[1];
+        String numberOfGroups = args[2];
+        client.run(emailPath,messagePath,Integer.parseInt(numberOfGroups));
     }
 
-    private void run() {
+    private void run(String emailPath, String messagePath,int numberOfGroups) {
         // Open a connexion to the mail server
         try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
              var in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
              var out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8))) {
 
-            // Create the groups using the DataReader
 
+            // Create the groups using the DataReader
+            ArrayList<String> addresses = getAddressesFromFile(emailPath);
+            ArrayList<Group> groups = new ArrayList<Group>();
+            int peoplePerGroup = addresses.size() / numberOfGroups;
+
+            if(peoplePerGroup < 2) {
+                throw new RuntimeException("Not enough email addresses for this many groups!");
+            } else if (peoplePerGroup > 5) {
+                throw new RuntimeException("Too many messages for this many groups!");
+            }
+            // For each group provide a few addresses and remove them from the list so as not to use them multiple times
+            for (int i = 0; i < numberOfGroups; i++) {
+                groups.add(new Group(addresses.subList(0, peoplePerGroup).toArray(new String[0])));
+                addresses.subList(0, peoplePerGroup).clear();
+            }
 
             // Create the messages using the DataReader
-
+            ArrayList<Message> messages = getMessagesFromFile(messagePath);
 
             // Send messages to groups
 
 
 
-//            // Read the welcome message
-//            String line;
-//            while ((line = in.readLine()) != null && !line.equals("END")) {
-//                System.out.println(line);
-//            }
-//
-//            // Read user input
-//            Scanner scanner = new Scanner(System.in);
-//            String msg;
-//            while (!Objects.equals(msg = scanner.nextLine(), "EXIT")) {
-//                // Send the message to the server
-//                out.write(msg + "\n");
-//                out.flush();
-//                // Read the response from the server
-//                line = in.readLine();
-//                System.out.println(line);
-//            }
         } catch (IOException e) {
-//            System.out.println("Client: exception while using client socket: " + e);
+            System.out.println("Error: " + e);
         }
     }
 }
