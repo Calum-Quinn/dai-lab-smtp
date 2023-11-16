@@ -54,7 +54,6 @@ public class Client {
             ArrayList<Message> messages = getMessagesFromFile(messagePath);
 
             // Send messages to groups
-            out.write();
 
 
         } catch (IOException e) {
