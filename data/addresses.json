@@ -1,0 +1,13 @@
+{
+  "addresses" : [
+    {
+      "address" : "test1@test.com"
+    },
+    {
+      "address": "test2@test.com"
+    },
+    {
+      "address": "test3@test.com"
+    }
+  ]
+}
