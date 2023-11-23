@@ -18,8 +18,6 @@ public class Client {
     final String SERVER_ADDRESS = "127.0.0.1";
     final int SERVER_PORT = 1025;
 
-//    final String fileName = "Emails.txt";
-
     public static void main(String[] args) {
         // Create the client
         Client client = new Client();
@@ -38,7 +36,7 @@ public class Client {
 
             // Create the groups using the DataReader
             ArrayList<String> addresses = DataReader.getAddressesFromFile(emailPath);
-            ArrayList<Group> groups = new ArrayList<Group>();
+            ArrayList<Group> groups = new ArrayList<>();
             int peoplePerGroup = addresses.size() / numberOfGroups;
 
             if(peoplePerGroup < 2) {
@@ -56,9 +54,28 @@ public class Client {
             ArrayList<Message> messages = getMessagesFromFile(messagePath);
 
             // Send messages to groups
-
-
-
+            for (Group group :groups) {
+                out.write(
+                        "ehlo heig-vd.ch\n" +
+                        "mail from:<senderEmail>\n"
+                );
+                out.flush();
+                for (String address : group.getReceiverAddresses()) {
+                    out.write("rcpt to:<" + address + ">\n");
+                }
+                out.flush();
+                out.write(
+                        "data\n" +
+                        "From: <chuck.norris@hotmail.ch>\n" +
+                        "To:\n" +
+                        "Date: November 30th, 2023\n" +
+                        "Subject: Hello\n" +
+                        "Hi, this is spoof.\n" +
+                        "\n" +
+                        ".\n"
+                );
+                out.flush();
+            }
         } catch (IOException e) {
             System.out.println("Error: " + e);
         } catch (ParseException e) {
