@@ -54,8 +54,28 @@ public class Client {
             ArrayList<Message> messages = getMessagesFromFile(messagePath);
 
             // Send messages to groups
-
-
+            for (Group group :groups) {
+                out.write(
+                        "ehlo heig-vd.ch\n" +
+                        "mail from:<senderEmail>\n"
+                );
+                out.flush();
+                for (String address : group.getReceiverAddresses()) {
+                    out.write("rcpt to:<" + address + ">\n");
+                }
+                out.flush();
+                out.write(
+                        "data\n" +
+                        "From: <chuck.norris@hotmail.ch>\n" +
+                        "To:\n" +
+                        "Date: November 30th, 2023\n" +
+                        "Subject: Hello\n" +
+                        "Hi, this is spoof.\n" +
+                        "\n" +
+                        ".\n"
+                );
+                out.flush();
+            }
         } catch (IOException e) {
             System.out.println("Error: " + e);
         } catch (ParseException e) {
