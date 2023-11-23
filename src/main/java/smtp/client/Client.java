@@ -53,28 +53,75 @@ public class Client {
             // Create the messages using the DataReader
             ArrayList<Message> messages = getMessagesFromFile(messagePath);
 
+            String line;
+            int messageCount = 0;
+            String code = "0";
+            boolean success = true;
             // Send messages to groups
             for (Group group :groups) {
-                out.write(
-                        "ehlo heig-vd.ch\n" +
-                        "mail from:<senderEmail>\n"
-                );
+                while ((line = in.readLine()) != null && !line.equals("220 a547a1b16b1a ESMTP")) {
+                    System.out.println(line);
+                }
+
+                out.write("ehlo heig-vd.ch\n");
                 out.flush();
+
+
+                while ((line = in.readLine()) != null && !line.equals("250 SMTPUTF8")) {
+                    System.out.println(line);
+                }
+                System.out.println(line);
+
+                out.write("mail from:<" + group.getSenderAddress() + ">\n");
+                out.flush();
+
+                while ((line = in.readLine()) != null && !line.equals("250 Accepted")) {
+                    System.out.println(line);
+                }
+
                 for (String address : group.getReceiverAddresses()) {
                     out.write("rcpt to:<" + address + ">\n");
+                    out.flush();
+                    while ((line = in.readLine()) != null && !line.equals("250 Accepted")) {
+                        System.out.println(line);
+                    }
                 }
+
+                out.write("data\n");
                 out.flush();
-                out.write(
-                        "data\n" +
-                        "From: <chuck.norris@hotmail.ch>\n" +
-                        "To:\n" +
-                        "Date: November 30th, 2023\n" +
-                        "Subject: Hello\n" +
-                        "Hi, this is spoof.\n" +
-                        "\n" +
-                        ".\n"
-                );
+                while ((line = in.readLine()) != null && !line.equals("354 End data with <CR><LF>.<CR><LF>")) {
+                    System.out.println(line);
+                }
+
+                // Only move on if command was successful
+                while(success) {
+                    out.write(
+                            "From: <chuck.norris@hotmail.ch>\n" +
+                                    "To:\n" +
+                                    "Date: 30 novembre 2023\n" +
+                                    "Subject: Hello\n" +
+                                    "\n" +
+                                    messages.get(messageCount++) +
+                                    ".\n"
+                    );
+                    out.flush();
+
+                    line = in.readLine();
+
+                    System.out.println(line);
+                    if (line != null) {
+                        code = line.substring(0, 3);
+                    }
+
+                    success = code.equals("250");
+                }
+
+                out.write("quit\n");
                 out.flush();
+
+                while((line = in.readLine()) != null && !line.equals("221 Bye")) {
+                    System.out.println(line);
+                }
             }
         } catch (IOException e) {
             System.out.println("Error: " + e);
