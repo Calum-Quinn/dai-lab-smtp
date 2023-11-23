@@ -10,11 +10,6 @@ import java.util.ArrayList;
 import static smtp.client.DataReader.getMessagesFromFile;
 
 public class Client {
-
-    private DataReader dataReader;
-    private ArrayList<Group> groups;
-    private ArrayList<Message> messages;
-
     final String SERVER_ADDRESS = "127.0.0.1";
     final int SERVER_PORT = 1025;
 
@@ -60,9 +55,11 @@ public class Client {
             // Send messages to groups
             for (Group group :groups) {
                 while ((line = in.readLine()) != null && !line.equals("220 a547a1b16b1a ESMTP")) {
-                    System.out.println(line);
+//                    System.out.println(line);
                 }
+                System.out.println(line);
 
+                System.out.println("ehlo heig-vd.ch");
                 out.write("ehlo heig-vd.ch\n");
                 out.flush();
 
@@ -72,29 +69,42 @@ public class Client {
                 }
                 System.out.println(line);
 
+                System.out.println("mail from:<" + group.getSenderAddress() + ">");
                 out.write("mail from:<" + group.getSenderAddress() + ">\n");
                 out.flush();
 
                 while ((line = in.readLine()) != null && !line.equals("250 Accepted")) {
                     System.out.println(line);
                 }
+                System.out.println(line);
 
                 for (String address : group.getReceiverAddresses()) {
+                    System.out.println("rcpt to:<" + address + ">");
                     out.write("rcpt to:<" + address + ">\n");
                     out.flush();
                     while ((line = in.readLine()) != null && !line.equals("250 Accepted")) {
                         System.out.println(line);
                     }
+                    System.out.println(line);
                 }
 
+                System.out.println("data");
                 out.write("data\n");
                 out.flush();
                 while ((line = in.readLine()) != null && !line.equals("354 End data with <CR><LF>.<CR><LF>")) {
                     System.out.println(line);
                 }
+                System.out.println(line);
 
                 // Only move on if command was successful
                 while(success) {
+                    System.out.println("\"From: <chuck.norris@hotmail.ch>\\n\" +\n" +
+                            "                                    \"To:\\n\" +\n" +
+                            "                                    \"Date: 30 novembre 2023\\n\" +\n" +
+                            "                                    \"Subject: Hello\\n\" +\n" +
+                            "                                    \"\\n\" +\n" +
+                            "                                    messages.get(messageCount++) +\n" +
+                            "                                    \".\\n\"");
                     out.write(
                             "From: <chuck.norris@hotmail.ch>\n" +
                                     "To:\n" +
@@ -116,12 +126,14 @@ public class Client {
                     success = code.equals("250");
                 }
 
+                System.out.println("quit");
                 out.write("quit\n");
                 out.flush();
 
                 while((line = in.readLine()) != null && !line.equals("221 Bye")) {
                     System.out.println(line);
                 }
+                System.out.println(line);
             }
         } catch (IOException e) {
             System.out.println("Error: " + e);
