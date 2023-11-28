@@ -41,7 +41,8 @@ created. The application will then create groups of victims and send them a mess
 ## Configuration
 
 At the start of the application, the user must provide two files, the list of email addresses and the list of messages.
-You can either use the provided files in the [data](./data) folder or create your own. If you create your own files, make sure to use
+You can either use the provided files in the [data](./data) folder or create your own. If you create your own files,
+make sure to use
 **json** files and follow the format below.
 
 ### Email addresses
@@ -85,17 +86,17 @@ You can either use the provided files in the [data](./data) folder or create you
     ```shell
     docker run -d -p 1080:1080 -p 1025:1025 maildev/maildev
     ```
-   
+
 2. Run the application
 
     ```shell
     java -jar target/stmp-client-1.0.jar <path to email addresses> <path to messages> <number of groups>
     ```
-   for example : 
+   for example :
     ```shell
     java -jar target/stmp-client-1.0.jar data/addresses.json data/messages.json 3
     ```
-   
+
 That's it, the application will now send the messages to the victims.
 
 ## Implementation
@@ -103,6 +104,25 @@ That's it, the application will now send the messages to the victims.
 ### Class diagram
 
 ![img.png](figures/img.png)
+
+#### DataReader
+
+The `DataReader` class is responsible for reading the email addresses and messages from the json files provided by the
+user.
+
+#### Client
+
+The `Client` class is the main class of the application. It is responsible for creating the groups of victims and
+sending the messages to the SMTP server.
+
+#### Group
+
+The `Group` class represents a group of victims. It contains the sender and the receivers of the group. It also contains 
+the message that will be sent to the receivers.
+
+#### Message
+
+The `Message` class represents an email message. It contains the subject and the body of the message.
 
 ### Examples of dialogues with the SMTP server
   
