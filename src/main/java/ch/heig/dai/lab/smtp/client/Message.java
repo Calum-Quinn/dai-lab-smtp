@@ -9,6 +9,7 @@ public class Message {
         this.body = body;
     }
 
+    @Override
     public String toString() {
         return "Subject: " + subject + "\n\n" + body + "\n";
     }
