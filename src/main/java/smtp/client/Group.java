@@ -4,26 +4,39 @@ import java.util.ArrayList;
 
 public class Group {
     private final String senderAddress;
-    private final String[] receiverAddresses;
-    private ArrayList<Message> messages;
+    private final ArrayList<String> receiverAddresses;
+    private Message message;
+
+    public Group(String senderAddress, ArrayList<String> receiverAddresses) {
+        this.senderAddress = senderAddress;
+        this.receiverAddresses = receiverAddresses;
+    }
 
     public String getSenderAddress() {
         return senderAddress;
     }
 
-    public String[] getReceiverAddresses() {
+    public ArrayList<String> getReceiverAddresses() {
         return receiverAddresses;
     }
 
-    Group(String[] emailAddresses) {
-        senderAddress = emailAddresses[0];
-        receiverAddresses = new String[emailAddresses.length - 1];
-        System.arraycopy(emailAddresses, 1, receiverAddresses, 0, receiverAddresses.length);
+    public void setMessage(Message message) {
+        this.message = message;
     }
 
-    public void sendMessage(Message message) {
-        messages.add(message);
+    public String getEmailToSend() {
+        StringBuilder email = new StringBuilder();
+        email.append("From: ").append(senderAddress).append("\n");
+        email.append("To: ");
+        for (String address : receiverAddresses) {
+            email.append(address).append(", ");
+        }
+        email.deleteCharAt(email.length() - 1);
+        email.append("\n");
+        email.append("Date: ").append(System.currentTimeMillis()).append("\n");
+        email.append(message.toString());
+        email.append("\r\n.\r\n");
 
-        // Send the message
+        return email.toString();
     }
 }

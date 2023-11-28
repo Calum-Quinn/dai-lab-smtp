@@ -37,6 +37,8 @@ public abstract class DataReader {
      * @throws RuntimeException if the file contains invalid addresses
      */
     public static ArrayList<String> getAddressesFromFile(String path) throws IOException, ParseException {
+        ArrayList<String> addresses = new ArrayList<>();
+
         try (FileReader fileReader = new FileReader(path)) {
             Object object = new JSONParser().parse(fileReader);
             JSONObject jo = (JSONObject) object;
@@ -44,7 +46,6 @@ public abstract class DataReader {
             if (ja == null) {
                 throw new ParseException(0);
             }
-            ArrayList<String> addresses = new ArrayList<>();
 
             for (Object o : ja) {
                 JSONObject message = (JSONObject) o;
@@ -57,8 +58,6 @@ public abstract class DataReader {
                 }
                 addresses.add(address);
             }
-
-            return addresses;
         } catch (IOException e) {
             System.out.println("Erreur : fichier introuvable");
         } catch (ParseException e) {
@@ -67,7 +66,7 @@ public abstract class DataReader {
             System.out.println("Erreur : le fichier contient des adresses invalides");
         }
 
-        return null;
+        return addresses;
     }
 
     /**
@@ -78,6 +77,8 @@ public abstract class DataReader {
      * @throws ParseException if the file is not in the correct format
      */
     public static ArrayList<Message> getMessagesFromFile(String path) throws IOException, ParseException {
+        ArrayList<Message> messages = new ArrayList<>();
+
         try (FileReader fileReader = new FileReader(path)) {
             Object object = new JSONParser().parse(fileReader);
             JSONObject jo = (JSONObject) object;
@@ -85,7 +86,6 @@ public abstract class DataReader {
             if (ja == null) {
                 throw new ParseException(0);
             }
-            ArrayList<Message> messages = new ArrayList<>();
 
             for (Object o : ja) {
                 JSONObject message = (JSONObject) o;
@@ -96,14 +96,12 @@ public abstract class DataReader {
                 }
                 messages.add(new Message(subject, body));
             }
-
-            return messages;
         } catch (IOException e) {
             System.out.println("Erreur : le fichier introuvable");
         } catch (ParseException | RuntimeException e) {
             System.out.println("Erreur : le fichier n'est pas au bon format");
         }
 
-        return null;
+        return messages;
     }
 }

@@ -1,12 +1,16 @@
 {
   "messages": [
     {
-      "subject": "Test",
-      "body": "This is a test message"
+      "subject": "Hello World",
+      "body": "This is a test message\nHAHAHAH"
     },
     {
-      "subject": "Test 2",
-      "body": "This is a test message 2"
+      "subject": "Hi World",
+      "body": "This is a test message 2\nwith a new line\nand another one"
+    },
+    {
+      "subject": "Hello it's me",
+      "body": "Can you click on the link please?"
     }
   ]
 }

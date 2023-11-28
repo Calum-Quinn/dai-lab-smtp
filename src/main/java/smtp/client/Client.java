@@ -19,10 +19,10 @@ public class Client {
         String emailPath = args[0];
         String messagePath = args[1];
         String numberOfGroups = args[2];
-        client.run(emailPath,messagePath,Integer.parseInt(numberOfGroups));
+        client.run(emailPath, messagePath, Integer.parseInt(numberOfGroups));
     }
 
-    private void run(String emailPath, String messagePath,int numberOfGroups) {
+    private void run(String emailPath, String messagePath, int numberOfGroups) {
         // Open a connexion to the mail server
         try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
              var in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
@@ -34,111 +34,103 @@ public class Client {
             ArrayList<Group> groups = new ArrayList<>();
             int peoplePerGroup = addresses.size() / numberOfGroups;
 
-            if(peoplePerGroup < 2) {
+            if (peoplePerGroup < 2) {
                 throw new RuntimeException("Not enough email addresses for this many groups!");
             } else if (peoplePerGroup > 5) {
+                // TODO : ???
                 throw new RuntimeException("Too many messages for this many groups!");
             }
-            // For each group provide a few addresses and remove them from the list so as not to use them multiple times
-            for (int i = 0; i < numberOfGroups; i++) {
-                groups.add(new Group(addresses.subList(0, peoplePerGroup).toArray(new String[0])));
-                addresses.subList(0, peoplePerGroup).clear();
+
+            // Create the groups and assign them the sender and receivers
+            int index = 0;
+            for (int i = 0; i < numberOfGroups; ++i) {
+                int from = (index + 1); // +1 to skip the sender
+                int to = (numberOfGroups + 1) * (i + 1);
+                ArrayList<String> receivers = new ArrayList<>(addresses.subList(from, to));
+                groups.add(new Group(addresses.get(index), receivers));
+                index += peoplePerGroup;
             }
 
             // Create the messages using the DataReader
             ArrayList<Message> messages = getMessagesFromFile(messagePath);
 
-            String line;
-            int messageCount = 0;
-            String code = "0";
-            boolean success = true;
-            // Send messages to groups
-            for (Group group :groups) {
-                while ((line = in.readLine()) != null && !line.equals("220 a547a1b16b1a ESMTP")) {
-//                    System.out.println(line);
-                }
-                System.out.println(line);
+            if (messages.size() < groups.size()) {
+                throw new RuntimeException("Not enough messages for this many groups!");
+            }
 
-                System.out.println("ehlo heig-vd.ch");
-                out.write("ehlo heig-vd.ch\n");
-                out.flush();
+            for (int i = 0; i < groups.size(); ++i) {
+                groups.get(i).setMessage(messages.get(i));
+            }
 
+            // Service ready
+            readServerResponse(in, "220");
 
-                while ((line = in.readLine()) != null && !line.equals("250 SMTPUTF8")) {
-                    System.out.println(line);
-                }
-                System.out.println(line);
+            // Send ehlo
+            System.out.println("ehlo heig-vd.ch");
+            out.write("ehlo heig-vd.ch\n");
+            out.flush();
 
+            // Read the response
+            readServerResponse(in, "250");
+
+            // Create the emails
+            for (Group group : groups) {
+                // Send from
                 System.out.println("mail from:<" + group.getSenderAddress() + ">");
                 out.write("mail from:<" + group.getSenderAddress() + ">\n");
                 out.flush();
 
-                while ((line = in.readLine()) != null && !line.equals("250 Accepted")) {
-                    System.out.println(line);
-                }
-                System.out.println(line);
+                // Read the response
+                readServerResponse(in, "250");
 
+                // Send to
                 for (String address : group.getReceiverAddresses()) {
                     System.out.println("rcpt to:<" + address + ">");
                     out.write("rcpt to:<" + address + ">\n");
                     out.flush();
-                    while ((line = in.readLine()) != null && !line.equals("250 Accepted")) {
-                        System.out.println(line);
-                    }
-                    System.out.println(line);
+                    readServerResponse(in, "250");
                 }
 
+                // Send data
                 System.out.println("data");
                 out.write("data\n");
                 out.flush();
-                while ((line = in.readLine()) != null && !line.equals("354 End data with <CR><LF>.<CR><LF>")) {
-                    System.out.println(line);
-                }
-                System.out.println(line);
 
-                // Only move on if command was successful
-                while(success) {
-                    System.out.println("\"From: <chuck.norris@hotmail.ch>\\n\" +\n" +
-                            "                                    \"To:\\n\" +\n" +
-                            "                                    \"Date: 30 novembre 2023\\n\" +\n" +
-                            "                                    \"Subject: Hello\\n\" +\n" +
-                            "                                    \"\\n\" +\n" +
-                            "                                    messages.get(messageCount++) +\n" +
-                            "                                    \".\\n\"");
-                    out.write(
-                            "From: <chuck.norris@hotmail.ch>\n" +
-                                    "To:\n" +
-                                    "Date: 30 novembre 2023\n" +
-                                    "Subject: Hello\n" +
-                                    "\n" +
-                                    messages.get(messageCount++) +
-                                    ".\n"
-                    );
-                    out.flush();
+                // Read the response
+                readServerResponse(in, "354");
 
-                    line = in.readLine();
-
-                    System.out.println(line);
-                    if (line != null) {
-                        code = line.substring(0, 3);
-                    }
-
-                    success = code.equals("250");
-                }
-
-                System.out.println("quit");
-                out.write("quit\n");
+                // Send the message
+                System.out.println(group.getEmailToSend());
+                out.write(group.getEmailToSend());
                 out.flush();
 
-                while((line = in.readLine()) != null && !line.equals("221 Bye")) {
-                    System.out.println(line);
-                }
-                System.out.println(line);
+                // Read the response
+                readServerResponse(in, "250");
             }
-        } catch (IOException e) {
+
+            // Send quit
+            System.out.println("quit");
+            out.write("quit\n");
+            out.flush();
+
+            // Read connection closing
+            readServerResponse(in, "221");
+        } catch (IOException | RuntimeException e) {
             System.out.println("Error: " + e);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void readServerResponse(BufferedReader in, String successCode) throws IOException {
+        String line;
+        while ((line = in.readLine()) != null && !line.startsWith(successCode + " ")) {
+            // If the server returns a line starting with 4xx or 5xx, the message was not sent
+            if (!line.startsWith("250")) {
+                throw new RuntimeException(line);
+            }
+            System.out.println("Server: " + line);
+        }
+        System.out.println("Server: " + line);
     }
 }
