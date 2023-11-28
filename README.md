@@ -102,5 +102,7 @@ That's it, the application will now send the messages to the victims.
 
 ### Class diagram
 
+![img.png](figures/img.png)
+
 ### Examples of dialogues with the SMTP server
   
