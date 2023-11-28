@@ -1,6 +1,7 @@
-package smtp.client;
+package ch.heig.dai.lab.smtp.client;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,40 +31,35 @@ public abstract class DataReader {
 
     /**
      * Reads a file containing email addresses and returns them as an ArrayList
+     *
      * @param path the path to the file
      * @return an ArrayList containing the email addresses
-     * @throws IOException if the file is not found
-     * @throws ParseException if the file is not in the correct format
-     * @throws RuntimeException if the file contains invalid addresses
      */
-    public static ArrayList<String> getAddressesFromFile(String path) throws IOException, ParseException {
+    public static ArrayList<String> getAddressesFromFile(String path) {
         ArrayList<String> addresses = new ArrayList<>();
 
-        try (FileReader fileReader = new FileReader(path)) {
+        try (FileReader fileReader = new FileReader(path, StandardCharsets.UTF_8)) {
             Object object = new JSONParser().parse(fileReader);
             JSONObject jo = (JSONObject) object;
             JSONArray ja = (JSONArray) jo.get("addresses");
             if (ja == null) {
-                throw new ParseException(0);
+                throw new RuntimeException(path + " is not in the correct format");
             }
 
             for (Object o : ja) {
                 JSONObject message = (JSONObject) o;
                 String address = (String) message.get("address");
                 if (address == null) {
-                    throw new ParseException(0);
+                    throw new RuntimeException(path + " is not in the correct format");
                 }
                 if (!validateAddress(address)) {
-                    throw new RuntimeException();
+                    throw new RuntimeException(path + " contains invalid addresses");
                 }
                 addresses.add(address);
             }
-        } catch (IOException e) {
-            System.out.println("Erreur : fichier introuvable");
-        } catch (ParseException e) {
-            System.out.println("Erreur : le fichier n'est pas au bon format");
-        } catch (RuntimeException e) {
-            System.out.println("Erreur : le fichier contient des adresses invalides");
+        } catch (Exception e) {
+            System.out.println("Error : " + e.getMessage());
+            System.exit(1);
         }
 
         return addresses;
@@ -71,20 +67,19 @@ public abstract class DataReader {
 
     /**
      * Reads a file containing messages and returns them as an ArrayList
+     *
      * @param path the path to the file
      * @return an ArrayList containing the messages
-     * @throws IOException if the file is not found
-     * @throws ParseException if the file is not in the correct format
      */
-    public static ArrayList<Message> getMessagesFromFile(String path) throws IOException, ParseException {
+    public static ArrayList<Message> getMessagesFromFile(String path) {
         ArrayList<Message> messages = new ArrayList<>();
 
-        try (FileReader fileReader = new FileReader(path)) {
+        try (FileReader fileReader = new FileReader(path, StandardCharsets.UTF_8)) {
             Object object = new JSONParser().parse(fileReader);
             JSONObject jo = (JSONObject) object;
             JSONArray ja = (JSONArray) jo.get("messages");
             if (ja == null) {
-                throw new ParseException(0);
+                throw new RuntimeException(path + " is not in the correct format");
             }
 
             for (Object o : ja) {
@@ -92,14 +87,13 @@ public abstract class DataReader {
                 String subject = (String) message.get("subject");
                 String body = (String) message.get("body");
                 if (subject == null || body == null) {
-                    throw new RuntimeException();
+                    throw new RuntimeException(path + " is not in the correct format");
                 }
                 messages.add(new Message(subject, body));
             }
-        } catch (IOException e) {
-            System.out.println("Erreur : le fichier introuvable");
-        } catch (ParseException | RuntimeException e) {
-            System.out.println("Erreur : le fichier n'est pas au bon format");
+        } catch (Exception e) {
+            System.out.println("Error : " + e.getMessage());
+            System.exit(1);
         }
 
         return messages;

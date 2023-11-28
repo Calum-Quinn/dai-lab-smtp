@@ -1,4 +1,4 @@
-package smtp.client;
+package ch.heig.dai.lab.smtp.client;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package smtp.client;
+package ch.heig.dai.lab.smtp.client;
 
 public class Message {
     private final String subject;
