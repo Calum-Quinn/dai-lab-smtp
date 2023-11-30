@@ -31,6 +31,7 @@ public class Client {
         groups = new ArrayList<>();
         int peoplePerGroup = addresses.size() / numberOfGroups;
 
+        // Check if there are enough addresses and messages
         if (peoplePerGroup < 2) {
             System.out.println("Error : not enough email addresses for this many groups!");
             System.exit(1);
@@ -39,19 +40,19 @@ public class Client {
             peoplePerGroup = 5;
         }
 
+        if (messages.size() < numberOfGroups) {
+            System.out.println("Error : not enough messages for this many groups!");
+            System.exit(1);
+        }
+
         // Create the groups and assign them the sender and receivers
         int index = 0;
         for (int i = 0; i < numberOfGroups; ++i) {
-            int from = (index + 1); // +1 to skip the sender
-            int to = (numberOfGroups + 1) * (i + 1);
-            ArrayList<String> receivers = new ArrayList<>(addresses.subList(from, to));
+            int from = index;
+            int to = index + peoplePerGroup;
+            ArrayList<String> receivers = new ArrayList<>(addresses.subList(from + 1, to));
             groups.add(new Group(addresses.get(index), receivers));
-            index += peoplePerGroup;
-        }
-
-        if (messages.size() < groups.size()) {
-            System.out.println("Error : not enough messages for this many groups!");
-            System.exit(1);
+            index = to;
         }
 
         // Assign the messages to the groups
