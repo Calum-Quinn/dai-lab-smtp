@@ -27,10 +27,8 @@ public class Group {
     public String getEmailToSend() {
         StringBuilder email = new StringBuilder();
         email.append("From: ").append(senderAddress).append("\n");
+        // Keep To empty so recipients don't see other recipient email addresses
         email.append("To: ");
-        for (String address : receiverAddresses) {
-            email.append(address).append(", ");
-        }
         email.deleteCharAt(email.length() - 1);
         email.append("\n");
         email.append("Date: ").append(System.currentTimeMillis()).append("\n");
