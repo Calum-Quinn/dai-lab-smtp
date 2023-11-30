@@ -126,3 +126,5 @@ The `Message` class represents an email message. It contains the subject and the
 
 ### Examples of dialogues with the SMTP server
   
+#### Basic dialog
+![Basic dialog](figures/BasicDialog.svg)
