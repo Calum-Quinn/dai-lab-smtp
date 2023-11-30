@@ -90,11 +90,11 @@ make sure to use
 2. Run the application
 
     ```shell
-    java -jar target/stmp-client-1.0.jar <path to email addresses> <path to messages> <number of groups>
+    java -jar .\target\smtp-client-1.0-jar-with-dependencies.jar <path to email addresses> <path to messages> <number of groups>
     ```
    for example :
     ```shell
-    java -jar target/stmp-client-1.0.jar data/addresses.json data/messages.json 3
+    java -jar .\target\smtp-client-1.0-jar-with-dependencies.jar data/addresses.json data/messages.json 3
     ```
 
 That's it, the application will now send the messages to the victims.
