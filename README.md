@@ -26,14 +26,20 @@ created. The application will then create groups of victims and send them a mess
     git clone https://github.com/Calum-Quinn/dai-lab-smtp
     ```
 
-3. In the `Client.java` file, change the `SERVER_ADDRESS` and `SERVER_PORT` to match your mock SMTP server.
+3. Go to the project directory
+
+    ```shell
+    cd dai-lab-smtp
+    ```
+
+4. In the `Client.java` file, change the `SERVER_ADDRESS` and `SERVER_PORT` to match your mock SMTP server.
 
     ```java
     final String SERVER_ADDRESS = "<your server address>";
     final int SERVER_PORT = <your server port>;
     ```
 
-4. Build the project
+5. Build the project
     ```shell
     mvn package
     ```
@@ -90,11 +96,11 @@ make sure to use
 2. Run the application
 
     ```shell
-    java -jar .\target\smtp-client-1.0-jar-with-dependencies.jar <path to email addresses> <path to messages> <number of groups>
+    java -jar target/smtp-client-1.0-jar-with-dependencies.jar <path to email addresses> <path to messages> <number of groups>
     ```
    for example :
     ```shell
-    java -jar .\target\smtp-client-1.0-jar-with-dependencies.jar data/addresses.json data/messages.json 3
+    java -jar target/smtp-client-1.0-jar-with-dependencies.jar data/addresses.json data/messages.json 3
     ```
 
 That's it, the application will now send the messages to the victims.
