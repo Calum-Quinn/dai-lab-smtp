@@ -23,7 +23,7 @@ created. The application will then create groups of victims and send them a mess
 2. Clone the repository
 
     ```shell
-    git clone https://github.com/Calum-Quinn/dai-lab-smtp
+    git clone https://github.com/Calum-Quinn/dai-lab-smtp.git
     ```
 
 3. Go to the project directory
