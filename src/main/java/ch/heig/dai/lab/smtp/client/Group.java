@@ -1,6 +1,8 @@
 package ch.heig.dai.lab.smtp.client;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class Group {
     private final String senderAddress;
@@ -31,7 +33,7 @@ public class Group {
         email.append("To: ");
         email.deleteCharAt(email.length() - 1);
         email.append("\n");
-        email.append("Date: ").append(System.currentTimeMillis()).append("\n");
+        email.append("Date: ").append(new SimpleDateFormat("dd.MM.yyyy").format(Calendar.getInstance().getTime())).append("\n");
         email.append(message.toString());
         email.append("\r\n.\r\n");
 
