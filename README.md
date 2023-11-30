@@ -23,7 +23,7 @@ created. The application will then create groups of victims and send them a mess
 2. Clone the repository
 
     ```shell
-    git clone https://github.com/Calum-Quinn/dai-lab-smtp.git
+    git clone https://github.com/Calum-Quinn/dai-lab-smtp
     ```
 
 3. In the `Client.java` file, change the `SERVER_ADDRESS` and `SERVER_PORT` to match your mock SMTP server.
