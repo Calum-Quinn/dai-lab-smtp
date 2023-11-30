@@ -127,4 +127,6 @@ The `Message` class represents an email message. It contains the subject and the
 ### Examples of dialogues with the SMTP server
   
 #### Basic dialog
+There should never be anything other than a basic dialog because all the information pertaining to the validity of the addresses or anything else should already have been handled by the client before sending anything to the server. 
+
 ![Basic dialog](figures/BasicDialog.svg)
