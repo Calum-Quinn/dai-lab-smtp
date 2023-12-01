@@ -28,6 +28,7 @@ public class Group {
 
     public String getEmailToSend() {
         StringBuilder email = new StringBuilder();
+        email.append("Content-Type: text/plain; charset=\"UTF-8\"\n");
         email.append("From: ").append(senderAddress).append("\n");
         // Keep To empty so recipients don't see other recipient email addresses
         email.append("To: ");
